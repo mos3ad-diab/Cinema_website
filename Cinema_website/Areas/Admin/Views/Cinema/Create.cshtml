@@ -1,0 +1,35 @@
+﻿@model Cinema
+
+@{
+    ViewData["Title"] = "Add Cinema";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/edit.css" asp-append-version="true" />
+}
+
+<div class="edit-container">
+    <div class="card edit-card">
+        <div class="card-header">
+            <h2><i class="fa-solid fa-plus"></i> Add New Cinema</h2>
+            <a href="/Admin/Cinema/Index" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Back to List</a>
+        </div>
+
+        <form action="/Admin/Cinema/Create" method="post" enctype="multipart/form-data" class="edit-form">
+            <div class="form-group">
+                <label for="Name" class="form-label">Cinema Name</label>
+                <input type="text" id="Name" name="Name" class="form-control" placeholder="Enter cinema name" required />
+            </div>
+
+            <div class="form-group">
+                <label for="img" class="form-label">Cinema Image</label>
+                <input type="file" id="img" name="img" class="form-control" accept="image/*" required />
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save"><i class="fa-solid fa-check"></i> Save Cinema</button>
+                <a href="/Admin/Cinema/Index" class="btn-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

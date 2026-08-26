@@ -1,0 +1,96 @@
+﻿@model Movie
+
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/edit.css" asp-append-version="true" />
+}
+
+<div class="edit-container">
+    <div class="card edit-card" style="max-width: 850px;">
+        <div class="card-header">
+            <h2><i class="fa-solid fa-plus"></i> Add New Movie</h2>
+            <a asp-area="Admin" asp-controller="Movies" asp-action="Index" class="btn-back">
+                <i class="fa-solid fa-arrow-left"></i> Back to List
+            </a>
+        </div>
+
+        <form asp-area="Admin" asp-controller="Movies" asp-action="Create" method="post" enctype="multipart/form-data" class="edit-form">
+
+            <div class="row">
+                <div class="form-group col-md-6 mb-3">
+                    <label for="Name" class="form-label">Movie Name</label>
+                    <input type="text" id="Name" name="Name" class="form-control" placeholder="Enter movie title" required />
+                </div>
+
+                <div class="form-group col-md-6 mb-3">
+                    <label for="Date_Time" class="form-label">Release Date & Time</label>
+                    <input type="datetime-local" id="Date_Time" name="Date_Time" class="form-control" required />
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="Description" class="form-label">Description</label>
+                <textarea id="Description" name="Description" class="form-control" rows="3" placeholder="Enter movie description"></textarea>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-6 mb-3">
+                    <label for="CategoryId" class="form-label">Category</label>
+                    <select id="CategoryId" name="CategoryId" class="form-select" asp-items="ViewBag.Categories" required>
+                        <option value="">-- Select Category --</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-6 mb-3">
+                    <label for="CinemaId" class="form-label">Cinema</label>
+                    <select id="CinemaId" name="CinemaId" class="form-select" asp-items="ViewBag.Cinemas" required>
+                        <option value="">-- Select Cinema --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <div class="form-check form-switch">
+                    <input type="checkbox" id="Status" name="Status" value="true" class="form-check-input" checked />
+                    <label for="Status" class="form-check-label fw-bold">Is Available / Showing</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-6 mb-3">
+                    <label for="mainImg" class="form-label">Main Image (Poster)</label>
+                    <input type="file" id="mainImg" name="mainImg" class="form-control" accept="image/*" required />
+                </div>
+
+                <div class="form-group col-md-6 mb-3">
+                    <label for="subImgs" class="form-label">Sub Images (Gallery)</label>
+                    <input type="file" id="subImgs" name="subImgs" class="form-control" accept="image/*" multiple />
+                </div>
+            </div>
+
+            <div class="form-group mb-4">
+                <label class="form-label fw-bold d-block mb-2">Select Actors</label>
+                <div class="actors-selection-grid">
+                    
+                    
+                    @foreach (var actor in ViewBag.Actors)
+                        {
+                            <div class="actor-checkbox-card">
+                                <input class="form-check-input" type="checkbox" name="selectedActors" value="@actor.Id" id="actor_@actor.Id">
+                                <label class="form-check-label" for="actor_@actor.Id">
+                                    @actor.Name
+                                </label>
+                            </div>
+                        }
+                    
+                    
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save"><i class="fa-solid fa-check"></i> Save Movie</button>
+                <a asp-area="Admin" asp-controller="Movie" asp-action="Index" class="btn-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

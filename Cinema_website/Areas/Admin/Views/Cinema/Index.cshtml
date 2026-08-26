@@ -1,0 +1,82 @@
+﻿@model List<Cinema>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/index.css" asp-append-version="true" />
+}
+
+
+
+<div class="page-container">
+<!-- Header Section: Search & Create Button -->
+<div class="top-bar">
+    <form action="/Admin/Cinema/Index" method="post" class="search-form">
+        <div class="search-input-group">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text"
+                   name="cinemaQuery"
+                   value="@ViewBag.cinemaQuery"
+                   placeholder="Search by cinema..."
+                   class="form-control search-input" />
+        </div>
+    </form>
+
+    <a href="/Admin/Cinema/Create" class="btn-create">
+        <i class="fa-solid fa-plus"></i> Add Cinema
+    </a>
+</div>
+
+<div class="cards-grid">
+    @foreach (var item in Model)
+    {
+        <div class="cinema-card" id="cinema-card-@item.Id">
+            <div class="card-image-wrapper">
+                <img src="~/Images/Cinema_Images/@item.Img" alt="@item.Name" asp-append-version="true" />
+                <div class="card-actions">
+                    <a href="/Admin/Cinema/Edit/@item.Id" class="action-btn edit-btn" title="Edit">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                    <!-- زرار الحذف مع SweetAlert -->
+                    <button type="button" class="action-btn delete-btn" title="Delete" onclick="confirmDelete(@item.Id, '@item.Name')">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <h3 class="card-title">@item.Name</h3>
+            </div>
+        </div>
+    }
+
+    <a href="/Admin/Cinema/Create" class="add-card">
+        <div class="plus-icon">
+            <i class="fa-solid fa-plus"></i>
+        </div>
+        <span>Add Cinema</span>
+    </a>
+</div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id, name) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `Do you really want to delete "${name}"?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e63757',
+                cancelButtonColor: '#5e6e82',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    popup: 'swal2-falcon-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // التوجيه لـ Action المسح في الـ Controller
+                    window.location.href = `/Admin/Cinema/Delete/${id}`;
+                }
+            });
+        }
+    </script>
+}

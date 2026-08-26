@@ -1,0 +1,46 @@
+﻿@model Cinema
+
+@{
+    ViewData["Title"] = "Edit Cinema";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/edit.css" asp-append-version="true" />
+}
+
+<div class="edit-container">
+    <div class="card edit-card">
+        <div class="card-header">
+            <h2><i class="fa-solid fa-pen-to-square"></i> Edit Cinema</h2>
+            <a asp-action="Index" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Back to List</a>
+        </div>
+
+        <form asp-action="Edit" method="post" enctype="multipart/form-data" class="edit-form">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Img" /> 
+
+            <div class="form-group">
+                <label asp-for="Name" class="form-label">Cinema Name</label>
+                <input asp-for="Name" class="form-control" placeholder="Enter cinema name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Current Image</label>
+                <div class="current-image-wrapper">
+                    <img src="~/Images/Cinema_Images/@Model.Img" alt="@Model.Name" asp-append-version="true" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="imageFile" class="form-label">Change Image (Optional)</label>
+                <input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*" />
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save"><i class="fa-solid fa-check"></i> Save Changes</button>
+                <a asp-action="Index" class="btn-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

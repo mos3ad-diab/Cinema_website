@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Cinema Management System</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+    <div class="app-layout">
+
+        <!-- Sidebar Navigation -->
+        @{
+            var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+        }
+
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-film"></i>
+                <span>Falcon</span>
+            </div>
+
+            <div class="sidebar-content">
+                <ul class="nav-menu">
+                    <!-- Dashboard Link -->
+                    <li class="nav-item">
+                        <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link @(currentController == "Home" ? "active" : "")">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <!-- Control Dropdown Parent -->
+                    <li class="nav-item">
+                        <a class="nav-link dropdown-btn" data-bs-toggle="collapse" href="#controlSubmenu" role="button" aria-expanded="true">
+                            <div class="link-left">
+                                <i class="fa-solid fa-sliders"></i>
+                                <span>Control</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                        </a>
+
+                        <!-- Submenu Items -->
+                        <div class="collapse show" id="controlSubmenu">
+                            <ul class="submenu">
+                                <li class="submenu-item @(currentController == "Cinema" || currentController == "Cinemas" ? "active" : "")">
+                                    <a asp-area="Admin" asp-controller="Cinema" asp-action="Index" class="submenu-link">
+                                        <i class="fa-solid fa-video"></i>
+                                        <span>Cinemas</span>
+                                    </a>
+                                </li>
+                                <li class="submenu-item @(currentController == "Movies" || currentController == "Movie" ? "active" : "")">
+                                    <a asp-area="Admin" asp-controller="Movies" asp-action="Index" class="submenu-link">
+                                        <i class="fa-solid fa-clapperboard"></i>
+                                        <span>Movies</span>
+                                    </a>
+                                </li>
+                                <li class="submenu-item @(currentController == "Actor" || currentController == "Actors" ? "active" : "")">
+                                    <a asp-area="Admin" asp-controller="Actor" asp-action="Index" class="submenu-link">
+                                        <i class="fa-solid fa-user-group"></i>
+                                        <span>Actors</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+
+            <!-- Top Navbar -->
+            <header class="navbar">
+                <div class="navbar-title">Cinema Management System</div>
+                <div class="nav-user-controls">
+                    <button class="icon-btn">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="badge">1</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Body -->
+            <main role="main" class="content">
+                @RenderBody()
+            </main>
+
+            <!-- Bottom Footer -->
+            <footer class="footer">
+                <div class="footer-content">
+                    <p class="copyright">Thank you for creating with <span>Falcon</span> &copy; 2026</p>
+                    <p class="version">v3.24.0</p>
+                </div>
+            </footer>
+
+        </div>
+
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- SweetAlert2 CSS & JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,113 @@
+﻿@model Movie
+
+@{
+    ViewData["Title"] = "Edit Movie";
+    var actors = ViewBag.Actors as List<Actor>;
+    var selectedActorIds = ViewBag.SelectedActorIds as List<int> ?? new List<int>();
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/edit.css" asp-append-version="true" />
+}
+
+<div class="edit-container">
+    <div class="card edit-card" style="max-width: 850px;">
+        <div class="card-header">
+            <h2><i class="fa-solid fa-pen-to-square"></i> Edit Movie</h2>
+            <a asp-area="Admin" asp-controller="Movie" asp-action="Index" class="btn-back">
+                <i class="fa-solid fa-arrow-left"></i> Back to List
+            </a>
+        </div>
+
+        <form asp-area="Admin" asp-controller="Movies" asp-action="Edit" method="post" enctype="multipart/form-data" class="edit-form">
+            <input type="hidden" name="Id" value="@Model.Id" />
+
+            <div class="row">
+                <div class="form-group col-md-6 mb-3">
+                    <label for="Name" class="form-label">Movie Name</label>
+                    <input type="text" id="Name" name="Name" value="@Model.Name" class="form-control" required />
+                </div>
+
+                <div class="form-group col-md-6 mb-3">
+                    <label for="Date_Time" class="form-label">Release Date & Time</label>
+                    <input type="datetime-local" id="Date_Time" name="Date_Time" value="@Model.Date_Time.ToString("yyyy-MM-ddTHH:mm")" class="form-control" required />
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="Description" class="form-label">Description</label>
+                <textarea id="Description" name="Description" class="form-control" rows="3">@Model.Description</textarea>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-6 mb-3">
+                    <label for="CategoryId" class="form-label">Category</label>
+                    <select id="CategoryId" name="CategoryId" class="form-select" asp-items="ViewBag.Categories" required></select>
+                </div>
+
+                <div class="form-group col-md-6 mb-3">
+                    <label for="CinemaId" class="form-label">Cinema</label>
+                    <select id="CinemaId" name="CinemaId" class="form-select" asp-items="ViewBag.Cinemas" required></select>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <div class="form-check form-switch">
+                    <input type="checkbox" id="Status" name="Status" value="true" class="form-check-input" @(Model.Status ? "checked" : "") />
+                    <label for="Status" class="form-check-label fw-bold">Is Available / Showing</label>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="form-group col-md-6 mb-3">
+                    <label class="form-label fw-bold">Current Main Image</label>
+                    <div class="current-image-wrapper mb-2">
+                        <img src="~/Images/Movies_Images/@Model.MainImg" alt="@Model.Name" asp-append-version="true" style="width: 100%; height: 160px; object-fit: cover; border-radius: 0.375rem; border: 1px solid #edf2f9;" />
+                    </div>
+                    <label for="mainImg" class="form-label">Change Main Image (Optional)</label>
+                    <input type="file" id="mainImg" name="mainImg" class="form-control" accept="image/*" />
+                </div>
+
+                <div class="form-group col-md-6 mb-3">
+                    <label for="subImgs" class="form-label">Add More Sub Images (Optional)</label>
+                    <input type="file" id="subImgs" name="subImgs" class="form-control" accept="image/*" multiple />
+
+                    @if (Model.SubImgs != null && Model.SubImgs.Any())
+                    {
+                        <label class="form-label fw-bold mt-3 d-block">Existing Sub Images:</label>
+                        <div class="d-flex flex-wrap gap-2 style-gallery">
+                            @foreach (var sub in Model.SubImgs)
+                            {
+                                <img src="~/Images/Movies_SubImages/@sub.Sub_Img" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #d8e2ef;" />
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="form-group mb-4">
+                <label class="form-label fw-bold d-block mb-2">Select Actors</label>
+                <div class="actors-selection-grid">
+                    @if (actors != null && actors.Any())
+                    {
+                        foreach (var actor in actors)
+                        {
+                            bool isChecked = selectedActorIds.Contains(actor.Id);
+                            <div class="actor-checkbox-card">
+                                <input class="form-check-input" type="checkbox" name="selectedActors" value="@actor.Id" id="actor_@actor.Id" @(isChecked ? "checked" : "")>
+                                <label class="form-check-label" for="actor_@actor.Id">
+                                    @actor.Name
+                                </label>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save"><i class="fa-solid fa-check"></i> Save Changes</button>
+                <a asp-area="Admin" asp-controller="Movies" asp-action="Index" class="btn-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,80 @@
+﻿@model List<Movie>
+
+@{
+    ViewData["Title"] = "Movies";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/index.css" asp-append-version="true" />
+}
+
+<div class="page-container">
+    <!-- Header Section: Search & Create Button -->
+    <div class="top-bar">
+        <form action="/Admin/Movies/Index" method="post" class="search-form">
+            <div class="search-input-group">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text"
+                       name="searchQuery"
+                       value="@ViewBag.SearchQuery"
+                       placeholder="Search by movie or cinema..."
+                       class="form-control search-input" />
+            </div>
+        </form>
+
+        <a href="/Admin/Movies/Create" class="btn-create">
+            <i class="fa-solid fa-plus"></i> Add Movie
+        </a>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="cards-grid">
+        @foreach (var item in Model)
+        {
+            <div class="cinema-card">
+                <div class="card-image-wrapper">
+                    <img src="~/Images/Movies_Images/@item.MainImg" alt="@item.Name" asp-append-version="true" />
+                    <div class="card-actions">
+                        <a href="/Admin/Movies/Edit/@item.Id" class="action-btn edit-btn" title="Edit">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                        <button type="button" class="action-btn delete-btn" title="Delete" onclick="confirmDelete(@item.Id, '@item.Name')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title">@item.Name</h3>
+                    <p class="card-subtitle">
+                        <span class="badge @(item.Status ? "bg-success" : "bg-danger")">
+                            @(item.Status ? "Active" : "Inactive")
+                        </span>
+                        | @item.Category?.Name | @item.Cinema?.Name
+                    </p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmDelete(id, name) {
+        Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you really want to delete "${name}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e63757',
+        cancelButtonColor: '#5e6e82',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+        }).then((result) => {
+        if (result.isConfirmed) {
+        window.location.href = `/Admin/Movies/Delete/${id}`;
+        }
+        });
+        }
+    </script>
+}
