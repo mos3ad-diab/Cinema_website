@@ -1,5 +1,6 @@
 ﻿using Cinema_website.Data;
 using Cinema_website.Models;
+using Cinema_website.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
@@ -10,17 +11,24 @@ namespace Cinema_website.Areas.Admin.Controllers
 
     public class ActorController : Controller
     {
-        private readonly ApplicationDbContext _context = new ApplicationDbContext();
-        [HttpGet]
-        public IActionResult Index()
+        //private readonly ApplicationDbContext _context = new ApplicationDbContext();
+        private readonly IRepository<Actor> _actorRepository;// = new Repository<Actor>();
+
+        public ActorController(IRepository<Actor> actorRepository)
         {
-            var actor = _context.Actors.ToList();
+            _actorRepository = actorRepository;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            var actor = await _actorRepository.GetAllAsync();
             return View(actor);
         }
         [HttpPost]
-        public IActionResult Index(string actorQuery)
+        public async Task<IActionResult> Index(string actorQuery)
         {
-            var actor = _context.Actors.Where(e => e.Name.Contains(actorQuery));
+            var actor = await _actorRepository.GetAllAsync(e => e.Name.Contains(actorQuery));
             ViewBag.ActorQuery = actorQuery;
             return View(actor.ToList());
         }
@@ -28,11 +36,12 @@ namespace Cinema_website.Areas.Admin.Controllers
         public IActionResult Create()
         {
 
-            return View();
+            return View(new Actor());
         }
         [HttpPost]
-        public IActionResult Create(Actor actor, IFormFile img)
+        public async Task<IActionResult> Create(Actor actor, IFormFile img)
         {
+            
 
             if (img != null)
             {
@@ -46,22 +55,26 @@ namespace Cinema_website.Areas.Admin.Controllers
                 actor.Img = fileName;
             }
 
-            _context.Actors.Add(actor);
-            _context.SaveChanges();
+            await _actorRepository.InsertAsync(actor);
+            await _actorRepository.CommitAsync();
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var actor = _context.Actors.Find(id);
+            var actor = await _actorRepository.GetOneAsync(e => e.Id == id);
             return View(actor);
         }
         [HttpPost]
-        public IActionResult Edit(Actor actor, IFormFile img)
+        public async Task<IActionResult> Edit(Actor actor, IFormFile img)
         {
-            var actorInDb = _context.Actors.AsNoTracking().FirstOrDefault(c => c.Id == actor.Id);
-
+            if (!ModelState.IsValid)
+            {
+                return View(actor);
+            }
+            //var actorInDb = _context.Actors.AsNoTracking().FirstOrDefault(c => c.Id == actor.Id);
+            var actorInDb = await _actorRepository.GetOneAsync(e => e.Id == actor.Id);
             if (img != null)
             {
                 var fileName = Guid.NewGuid().ToString() + "-" + img.FileName;
@@ -77,14 +90,14 @@ namespace Cinema_website.Areas.Admin.Controllers
             {
                 actor.Img = actorInDb.Img;
             }
-            _context.Actors.Update(actor);
-            _context.SaveChanges();
+            _actorRepository.Update(actor);
+            await _actorRepository.CommitAsync();
             return RedirectToAction("Index");
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var actor = _context.Actors.Find(id);
+            var actor = await _actorRepository.GetOneAsync(e=>e.Id == id);
             if (!string.IsNullOrEmpty(actor.Img))
             {
                 var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "Actor_Images", actor.Img);
@@ -93,8 +106,8 @@ namespace Cinema_website.Areas.Admin.Controllers
                     System.IO.File.Delete(imagePath);
                 }
             }
-            _context.Actors.Remove(actor);
-            _context.SaveChanges();
+            _actorRepository.Delete(actor);
+            await _actorRepository.CommitAsync();
             return RedirectToAction("Index");
         }
 

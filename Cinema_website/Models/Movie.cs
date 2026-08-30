@@ -1,9 +1,12 @@
-﻿namespace Cinema_website.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Cinema_website.Models
 {
     public class Movie
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        [MinLength(10)]
         public string Description { get; set; }
         public bool Status { get; set; }
 

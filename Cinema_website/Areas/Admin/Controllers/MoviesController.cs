@@ -1,29 +1,44 @@
 ﻿using Cinema_website.Data;
 using Cinema_website.Models;
+using Cinema_website.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Cinema_website.Areas.Admin.Controllers
 {
     public class MoviesController : Controller
     {
-        private readonly ApplicationDbContext _context = new ApplicationDbContext();
-        [HttpGet]
-        public IActionResult Index()
+        private readonly IRepository<Movie> _movieRepository; // = new Repository<Movie>();
+        private readonly IRepository<Category> _categoryRepository; //= new Repository<Category>();
+        private readonly IRepository<Cinema> _cinemaRepository; //= new Repository<Cinema>();
+        private readonly IRepository<Actor> _actorRepository; //= new Repository<Actor>();
+        private readonly IMovieActorRepository _movieActorRepository;// = new MovieActorRepository();
+
+        public MoviesController(IRepository<Movie> movieRepository, IRepository<Category> categoryRepository, IRepository<Cinema> cinemaRepository, IRepository<Actor> actorRepository, IMovieActorRepository movieActorRepository)
         {
-            var movies = _context.Movies.ToList();
-            return View(movies);
+            _movieRepository = movieRepository;
+            _categoryRepository = categoryRepository;
+            _cinemaRepository = cinemaRepository;
+            _actorRepository = actorRepository;
+            _movieActorRepository = movieActorRepository;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            var movies = await _movieRepository.GetAllAsync();
+            return View(movies.ToList());
         }
         [HttpPost]
-        public IActionResult Index(string searchQuery)
+        public async Task<IActionResult> Index(string searchQuery)
         {
-            var moviesQuery = _context.Movies
-              .Include(m => m.Category)
-              .Include(m => m.Cinema)
-              .AsQueryable();
+            var moviesQuery = await _movieRepository.GetAllAsync(
+                  includes:  [ m => m.Category, m => m.Cinema ]);
 
-         
+
+
             if (!string.IsNullOrEmpty(searchQuery))
             {
                 moviesQuery = moviesQuery.Where(m =>
@@ -35,18 +50,24 @@ namespace Cinema_website.Areas.Admin.Controllers
             return View(moviesQuery.ToList());
         }
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewBag.Categories = new SelectList(_context.Categories.ToList(), "Id", "Name");
-            ViewBag.Cinemas = new SelectList(_context.Cinemas.ToList(), "Id", "Name");
-            ViewBag.Actors = _context.Actors.ToList();
+            
+
+            ViewBag.Categories = new SelectList(await _categoryRepository.GetAllAsync(), "Id", "Name");
+            ViewBag.Cinemas = new SelectList(await _cinemaRepository.GetAllAsync(), "Id", "Name");
+            ViewBag.Actors = await _actorRepository.GetAllAsync();
 
 
-            return View();
+            return View(new Movie());
         }
         [HttpPost]
-        public IActionResult Create(Movie movie, IFormFile mainImg, List<IFormFile> subImgs, List<int> selectedActors)
+        public async Task<IActionResult> Create(Movie movie, IFormFile mainImg, List<IFormFile> subImgs, List<int> selectedActors)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(movie);
+            }
             // 1. Main Image
             if (mainImg != null)
             {
@@ -88,28 +109,27 @@ namespace Cinema_website.Areas.Admin.Controllers
                 }
             }
 
-            _context.Movies.Add(movie);
-            _context.SaveChanges();
+            await _movieRepository.InsertAsync(movie);
+            await _movieRepository.CommitAsync();
 
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var movie = _context.Movies
-                .Include(m => m.SubImgs)
-                .Include(m => m.MovieActors)
-                .FirstOrDefault(m => m.Id == id);
+            var movie = await _movieRepository.GetOneAsync(
+                  filter: e=>e.Id == id ,
+                  includes: [m => m.Category, m => m.Cinema, m => m.MovieActors]);
 
             if (movie == null)
             {
                 return NotFound();
             }
 
-            ViewBag.Categories = new SelectList(_context.Categories, "Id", "Name", movie.CategoryId);
-            ViewBag.Cinemas = new SelectList(_context.Cinemas, "Id", "Name", movie.CinemaId);
-            ViewBag.Actors = _context.Actors.ToList();
+            ViewBag.Categories = new SelectList(await _categoryRepository.GetAllAsync(), "Id", "Name", movie.CategoryId);
+            ViewBag.Cinemas = new SelectList(await _cinemaRepository.GetAllAsync(), "Id", "Name", movie.CinemaId);
+            ViewBag.Actors = await _actorRepository.GetAllAsync();
             ViewBag.SelectedActorIds = movie.MovieActors.Select(ma => ma.ActorId).ToList();
 
             return View(movie);
@@ -117,12 +137,18 @@ namespace Cinema_website.Areas.Admin.Controllers
 
         
         [HttpPost]
-        public IActionResult Edit(Movie movie, IFormFile mainImg, List<IFormFile> subImgs, List<int> selectedActors)
+        public async Task<IActionResult> Edit(Movie movie, IFormFile mainImg, List<IFormFile> subImgs, List<int> selectedActors)
         {
-            var movieInDb = _context.Movies
-                .Include(m => m.SubImgs)
-                .Include(m => m.MovieActors)
-                .FirstOrDefault(m => m.Id == movie.Id);
+            if (!ModelState.IsValid)
+            {
+                return View(movie);
+            }
+            //var movieInDb = _context.Movies
+            //  .Include(m => m.SubImgs)
+            //  .Include(m => m.MovieActors)
+            //  .FirstOrDefault(m => m.Id == movie.Id);
+
+            var movieInDb = await _movieRepository.GetOneAsync(filter: m => m.Id == movie.Id, includes: [m=>m.SubImgs , m=>m.MovieActors]);
 
             if (movieInDb == null) return NotFound();
 
@@ -165,7 +191,7 @@ namespace Cinema_website.Areas.Admin.Controllers
             }
 
             
-            _context.MovieActors.RemoveRange(movieInDb.MovieActors);
+            _movieActorRepository.DeleteRange(movieInDb.MovieActors);
             if (selectedActors != null && selectedActors.Count > 0)
             {
                 movieInDb.MovieActors = selectedActors.Select(actorId => new MovieActor
@@ -174,18 +200,15 @@ namespace Cinema_website.Areas.Admin.Controllers
                     ActorId = actorId
                 }).ToList();
             }
-
-            _context.SaveChanges();
+            _movieRepository.Update(movieInDb);
+            await _movieActorRepository.CommitAsync();
             return RedirectToAction("Index");
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
 
-            var movie = _context.Movies
-                  .Include(m => m.SubImgs)
-                  .Include(m => m.MovieActors)
-                  .FirstOrDefault(m => m.Id == id);
+            var movie = await _movieRepository.GetOneAsync(filter: m => m.Id == id, includes: [m => m.SubImgs, m => m.MovieActors]);
 
             if (movie == null)
             {
@@ -215,8 +238,8 @@ namespace Cinema_website.Areas.Admin.Controllers
             }
 
           
-            _context.Movies.Remove(movie);
-            _context.SaveChanges();
+            _movieRepository.Delete(movie);
+            await _movieRepository.CommitAsync();
 
             return RedirectToAction(nameof(Index));
 

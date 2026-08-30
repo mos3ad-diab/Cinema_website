@@ -16,15 +16,18 @@
         </div>
 
         <form asp-action="Edit" method="post" enctype="multipart/form-data" class="edit-form">
+            <!-- Hidden Fields -->
             <input type="hidden" asp-for="Id" />
-            <input type="hidden" asp-for="Img" /> 
+            <input type="hidden" asp-for="Img" />
 
+            <!-- Cinema Name -->
             <div class="form-group">
                 <label asp-for="Name" class="form-label">Cinema Name</label>
                 <input asp-for="Name" class="form-control" placeholder="Enter cinema name" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
+            <!-- Current Image -->
             <div class="form-group">
                 <label class="form-label">Current Image</label>
                 <div class="current-image-wrapper">
@@ -32,11 +35,13 @@
                 </div>
             </div>
 
+            <!-- New Image Input -->
             <div class="form-group">
                 <label for="imageFile" class="form-label">Change Image (Optional)</label>
                 <input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*" />
             </div>
 
+            <!-- Actions -->
             <div class="form-actions">
                 <button type="submit" class="btn-save"><i class="fa-solid fa-check"></i> Save Changes</button>
                 <a asp-action="Index" class="btn-cancel">Cancel</a>
@@ -44,3 +49,7 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

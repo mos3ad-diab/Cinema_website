@@ -67,6 +67,12 @@
                                         <span>Actors</span>
                                     </a>
                                 </li>
+                                <li class="submenu-item @(currentController == "Category" || currentController == "Category" ? "active" : "")">
+                                    <a asp-area="Admin" asp-controller="Category" asp-action="Index" class="submenu-link">
+                                        <i class="fa-solid fa-clapperboard"></i>
+                                        <span>Category</span>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </li>

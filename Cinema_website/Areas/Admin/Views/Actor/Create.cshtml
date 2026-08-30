@@ -19,11 +19,13 @@
             <div class="form-group">
                 <label for="Name" class="form-label">Actor Name</label>
                 <input type="text" id="Name" name="Name" class="form-control" placeholder="Enter actor name" required />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 <label for="img" class="form-label">Actor Photo</label>
                 <input type="file" id="img" name="img" class="form-control" accept="image/*" required />
+                
             </div>
 
             <div class="form-actions">

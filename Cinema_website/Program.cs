@@ -1,3 +1,7 @@
+using Cinema_website.Data;
+using Cinema_website.Models;
+using Cinema_website.Repositories;
+
 namespace Cinema_website
 {
     public class Program
@@ -8,6 +12,12 @@ namespace Cinema_website
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<ApplicationDbContext>();
+            builder.Services.AddScoped<IRepository<Movie>,Repository<Movie>>();
+            builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
+            builder.Services.AddScoped<IRepository<Actor>, Repository<Actor>>();
+            builder.Services.AddScoped<IRepository<Cinema>, Repository<Cinema>>();
+            builder.Services.AddScoped<IMovieActorRepository, MovieActorRepository>();
 
             var app = builder.Build();
 
