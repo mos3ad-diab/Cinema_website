@@ -1,6 +1,8 @@
 using Cinema_website.Data;
 using Cinema_website.Models;
 using Cinema_website.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Cinema_website
 {
@@ -12,7 +14,20 @@ namespace Cinema_website
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            builder.Services.AddDbContext<ApplicationDbContext>();
+
+            var connectionString =
+                builder.Configuration.GetConnectionString("DefaultConnection")
+                    ?? throw new InvalidOperationException("Connection string"
+                    + "'DefaultConnection' not found.");
+
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(connectionString));
+
+
+
+            builder.Services.AddDbContext<ApplicationDbContext>(options=>
+            options.UseSqlServer(connectionString)
+             );
             builder.Services.AddScoped<IRepository<Movie>,Repository<Movie>>();
             builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
             builder.Services.AddScoped<IRepository<Actor>, Repository<Actor>>();

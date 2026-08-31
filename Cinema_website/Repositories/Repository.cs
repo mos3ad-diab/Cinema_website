@@ -9,11 +9,12 @@ namespace Cinema_website.Repositories
 {
     public class Repository<T>: IRepository<T> where T : class
     {
-        protected readonly ApplicationDbContext _context = new ApplicationDbContext();
+        protected readonly ApplicationDbContext _context;
         private readonly DbSet<T> _dbSet;
 
-        public Repository()
+        public Repository(ApplicationDbContext context)
         {
+            _context = context;
             _dbSet = _context.Set<T>();
         }
         public async Task<EntityEntry<T>> InsertAsync(T entity)
