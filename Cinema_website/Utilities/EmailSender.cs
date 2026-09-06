@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
+using System.Net;
+using System.Net.Mail;
 
 namespace Cinema_website.Utilities
 {
@@ -6,7 +8,19 @@ namespace Cinema_website.Utilities
     {
         public Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            throw new NotImplementedException();
+            var client = new SmtpClient("smtp.gmail.com", 587)
+            {
+                EnableSsl = true,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential("mosaddiab94@gmail.com", "rbhz lkpw dysp kyvy")
+            };
+
+            return client.SendMailAsync(
+                new MailMessage(from: "mosaddiab94@gmail.com", to: email,subject,htmlMessage)
+                {
+                    IsBodyHtml = true
+                
+                });
         }
     }
-}
+    }

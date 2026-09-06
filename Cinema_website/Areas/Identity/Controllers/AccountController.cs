@@ -52,8 +52,9 @@ namespace Cinema_website.Areas.Identity.Controllers
                 }
                 return View(registerVM);
             }
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-            var link = Url.Action();
+            var link = Url.Action("ConfirmEmail" , "Account", new {area = "Identity", userId = user.Id , token = token} , Request.Scheme);
             
             await _emailSender.SendEmailAsync(
                 registerVM.Email,
@@ -62,6 +63,55 @@ namespace Cinema_website.Areas.Identity.Controllers
                 );
 
             return RedirectToAction(nameof(Login));
+        }
+
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user is null) return NotFound();
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if(!result.Succeeded)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+            return RedirectToAction(nameof(Login));
+        }
+        [HttpGet]
+        public IActionResult ResendEmailConfirmation()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ResendEmailConfirmation(EmailConfirmationVM emailConfirmationVM)
+        {
+            var user = await _userManager.FindByEmailAsync(emailConfirmationVM.UserNameOrEmail) ??
+               await _userManager.FindByNameAsync(emailConfirmationVM.UserNameOrEmail);
+
+
+            if (user is null)
+            {
+                ModelState.AddModelError("", "User not found");
+                return View(emailConfirmationVM);
+            }
+
+            if (await _userManager.IsEmailConfirmedAsync(user))
+            {
+                ModelState.AddModelError("", "This email is already confirmed.");
+                return View(emailConfirmationVM);
+            }
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            var link = Url.Action("ConfirmEmail", "Account", new { area = "Identity", userId = user.Id, token = token }, Request.Scheme);
+
+            await _emailSender.SendEmailAsync(
+                user.Email,
+                "Falcon Cinema Confirmation",
+                $"<h1> please click <a href = {link}> here </a> to confirm your account </h1>"
+                );
+
+            return RedirectToAction(nameof(Login));
+
         }
 
         [HttpGet]
@@ -89,6 +139,10 @@ namespace Cinema_website.Areas.Identity.Controllers
                 {
                     ModelState.AddModelError("", "to many attemps please try again later");
                 }
+                else if(result.IsNotAllowed)
+                {
+                    ModelState.AddModelError("", "please confirme your email");
+                }
                 else
                 {
                     ModelState.AddModelError("", "Invalid user name or password");
@@ -96,7 +150,7 @@ namespace Cinema_website.Areas.Identity.Controllers
                 return View(loginVM);
 
             }
-
+                
             return RedirectToAction("Index", "Cinema", new { area = "Admin" });
         }
     }

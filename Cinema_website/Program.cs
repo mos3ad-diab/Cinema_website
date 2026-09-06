@@ -35,9 +35,11 @@ namespace Cinema_website
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
+                options.SignIn.RequireConfirmedAccount = true;
             }
             )
-             .AddEntityFrameworkStores<ApplicationDbContext>();
+             .AddEntityFrameworkStores<ApplicationDbContext>()
+             .AddDefaultTokenProviders();
 
             builder.Services.AddScoped<IRepository<Movie>,Repository<Movie>>();
             builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
