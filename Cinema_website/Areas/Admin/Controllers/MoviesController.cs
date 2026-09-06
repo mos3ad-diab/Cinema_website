@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 
 namespace Cinema_website.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class MoviesController : Controller
     {
         private readonly IRepository<Movie> _movieRepository; // = new Repository<Movie>();

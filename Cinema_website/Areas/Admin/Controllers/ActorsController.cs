@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 namespace Cinema_website.Areas.Admin.Controllers
 {
-
+    [Area("Admin")]
     public class ActorController : Controller
     {
         //private readonly ApplicationDbContext _context = new ApplicationDbContext();

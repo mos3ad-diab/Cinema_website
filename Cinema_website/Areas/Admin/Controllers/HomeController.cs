@@ -5,6 +5,7 @@ using System.Diagnostics;
 
 namespace Cinema_website.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;

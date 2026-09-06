@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 namespace Cinema_website.Areas.Admin.Controllers
 {
-    
+    [Area("Admin")]
     public class CinemaController : Controller
     {
         private readonly IRepository<Cinema> _cinemaRepository;// = new Repository<Cinema>();

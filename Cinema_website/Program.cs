@@ -1,8 +1,11 @@
 using Cinema_website.Data;
 using Cinema_website.Models;
 using Cinema_website.Repositories;
+using Cinema_website.Utilities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace Cinema_website
 {
@@ -28,12 +31,20 @@ namespace Cinema_website
             builder.Services.AddDbContext<ApplicationDbContext>(options=>
             options.UseSqlServer(connectionString)
              );
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+            }
+            )
+             .AddEntityFrameworkStores<ApplicationDbContext>();
+
             builder.Services.AddScoped<IRepository<Movie>,Repository<Movie>>();
             builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
             builder.Services.AddScoped<IRepository<Actor>, Repository<Actor>>();
             builder.Services.AddScoped<IRepository<Cinema>, Repository<Cinema>>();
             builder.Services.AddScoped<IMovieActorRepository, MovieActorRepository>();
-
+            builder.Services.AddTransient<IEmailSender , EmailSender>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -52,7 +63,7 @@ namespace Cinema_website
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{area=Admin}/{controller=Movies}/{action=Index}/{id?}")
+                pattern: "{area=Identity}/{controller=Account}/{action=Login}/{id?}")
                 .WithStaticAssets();
 
             app.Run();

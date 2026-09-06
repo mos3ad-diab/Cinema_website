@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cinema_website.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoryController : Controller
     {
         private readonly IRepository<Category> _categoryRepository;
