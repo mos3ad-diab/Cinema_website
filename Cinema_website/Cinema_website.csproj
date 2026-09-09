@@ -18,6 +18,7 @@
 	  <Folder Include="Areas\Admin\Views\Home\" />
 	  <Folder Include="Views\" />
 	  <Folder Include="Views\RegisterVM\" />
+	  <Folder Include="Views\ResetPasswordVM\" />
 	  <Folder Include="wwwroot\Images\Movies_SubImages\" />
 	</ItemGroup>
 

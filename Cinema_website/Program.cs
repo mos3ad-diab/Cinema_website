@@ -45,6 +45,7 @@ namespace Cinema_website
             builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
             builder.Services.AddScoped<IRepository<Actor>, Repository<Actor>>();
             builder.Services.AddScoped<IRepository<Cinema>, Repository<Cinema>>();
+            builder.Services.AddScoped<IRepository<ApplicationUserOTP>, Repository<ApplicationUserOTP>>();
             builder.Services.AddScoped<IMovieActorRepository, MovieActorRepository>();
             builder.Services.AddTransient<IEmailSender , EmailSender>();
             var app = builder.Build();

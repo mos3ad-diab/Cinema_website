@@ -1,9 +1,12 @@
 ﻿using Cinema_website.Models;
+using Cinema_website.Repositories;
 using Cinema_website.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Cinema_website.Areas.Identity.Controllers
@@ -14,12 +17,13 @@ namespace Cinema_website.Areas.Identity.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
-
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender)
+        private readonly IRepository<ApplicationUserOTP> _applicationUserOTPrepository;
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender, IRepository<ApplicationUserOTP> applicationUserOTPrepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _applicationUserOTPrepository = applicationUserOTPrepository;
         }
 
         [HttpGet]
@@ -113,6 +117,7 @@ namespace Cinema_website.Areas.Identity.Controllers
             return RedirectToAction(nameof(Login));
 
         }
+        
 
         [HttpGet]
         public IActionResult Login()
@@ -153,5 +158,93 @@ namespace Cinema_website.Areas.Identity.Controllers
                 
             return RedirectToAction("Index", "Cinema", new { area = "Admin" });
         }
+        [HttpGet]
+        public IActionResult ForgetPassword()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ForgetPasswordAsync(ForgetPasswordVM forgetPasswordVM)
+        {
+            var user = await _userManager.FindByEmailAsync(forgetPasswordVM.UserNameOrEmail) ??
+                await _userManager.FindByNameAsync(forgetPasswordVM.UserNameOrEmail);
+            if (user is null)
+            {
+                ModelState.AddModelError("", "Invalid user name or Email");
+                return View(forgetPasswordVM);
+            }
+
+            
+            var otp = new Random().Next(1000, 9999).ToString();
+            var applicationUserOTP = new ApplicationUserOTP( otp , user.Id);
+            await _applicationUserOTPrepository.InsertAsync(applicationUserOTP);
+            await _applicationUserOTPrepository.CommitAsync();
+            await _emailSender.SendEmailAsync(
+                user.Email,
+                "Falcon Cinema Password Reset",
+                $"Use this OTP {otp} to continue the prosess"
+                );
+
+            return RedirectToAction(nameof(ConfirmOTP), new { userId = user.Id});
+        }
+
+        [HttpGet]
+        public IActionResult ConfirmOTP(string userId)
+        {
+            return View( new ConfirmOTPVM { UserId = userId});
+        }
+        [HttpPost]
+        public async Task<IActionResult> ConfirmOTP(ConfirmOTPVM confirmOTPVM)
+        {
+            var user = await _userManager.FindByIdAsync(confirmOTPVM.UserId);
+
+            if(user is null)
+            {
+                ModelState.AddModelError("", "Invalid user");
+                return View(confirmOTPVM);
+            }
+            var otps = await _applicationUserOTPrepository.GetAllAsync(o =>
+            o.ApplicationUserId == user.Id &&
+            o.IsValid == true &&
+            o.ValidTo >= DateTime.UtcNow
+            );
+            var applicationUserOtp =  otps.OrderByDescending(e => e.CreatedAt).FirstOrDefault();
+            if(applicationUserOtp == null || applicationUserOtp.OTP != confirmOTPVM.OTP)
+            {
+                ModelState.AddModelError("", "Invalid / expired otp");
+                return View(confirmOTPVM);
+            }
+            applicationUserOtp.IsValid = false;
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            await _applicationUserOTPrepository.CommitAsync();
+            return RedirectToAction(nameof(ResetPassword) , new { userId = user.Id , token});
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string userId , string token)
+        {
+            return View(new ResetPasswordVM { UserId = userId , Token = token });
+        }
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordVM resetPasswordVM)
+        {
+            if(!ModelState.IsValid)
+            {
+                return View(resetPasswordVM);
+            }
+            var user = await _userManager.FindByIdAsync(resetPasswordVM.UserId);
+            
+            if(user is null)
+            {
+                ModelState.AddModelError("", "Invalid user");
+                return View(resetPasswordVM);
+            }
+            await _userManager.ResetPasswordAsync(user, resetPasswordVM.Token, resetPasswordVM.Password);
+
+            return RedirectToAction(nameof(Login));
+        }
+
+
+
     }
 }
