@@ -1,0 +1,130 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Cinema_website.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Falcon Cinema</title>
+
+    <!-- Bootstrap 5.3 CSS (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons (CDN) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Custom Site CSS -->
+    <link href="~/css/customer/site.css" rel="stylesheet" />
+    
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+            <div class="container">
+                <!-- Cinema Brand -->
+                <a class="navbar-brand fw-bold fs-4 text-primary d-flex align-items-center gap-2" asp-area="Customer" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-film"></i>
+                    <span>Falcon Cinema</span>
+                </a>
+
+                <!-- Mobile Menu Toggle Button -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCustomer" aria-controls="navbarCustomer"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarCustomer">
+                    
+
+                    <!-- Cart & Account Menu -->
+                    <ul class="navbar-nav ms-auto align-items-center gap-3">
+                        <!-- Shopping Cart Icon -->
+                        <li class="nav-item">
+                            <a class="nav-link position-relative text-white fs-5 p-1" asp-area="Customer" asp-controller="Cart" asp-action="Index">
+                                <i class="bi bi-cart3"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fs-6">
+                                    0
+                                </span>
+                            </a>
+                        </li>
+
+                        <!-- Profile / Authentication Dropdown -->
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white d-flex align-items-center gap-2" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-circle fs-5"></i>
+                                    <span>@UserManager.GetUserName(User)</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="Identity" asp-controller="Profile" asp-action="Index">
+                                            <i class="bi bi-person me-2"></i>My Profile
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="Customer" asp-controller="Booking" asp-action="MyBookings">
+                                            <i class="bi bi-ticket-perforated me-2"></i>My Bookings
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form class="form-inline" asp-area="Identity" asp-controller="Account" asp-action="Logout">
+                                            <button type="submit" class="dropdown-item text-danger fw-bold">
+                                                <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white d-flex align-items-center gap-1" href="#" id="authDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-circle fs-5"></i>
+                                    <span>Account</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="authDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="Identity" asp-controller="Account" asp-action="Login">
+                                            <i class="bi bi-box-arrow-in-right me-2"></i>Log in
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="Identity" asp-controller="Account" asp-action="Register">
+                                            <i class="bi bi-person-plus me-2"></i>Register
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Body -->
+    <div class="container my-4">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer border-top bg-dark text-white-50 py-3 mt-auto">
+        <div class="container text-center">
+            &copy; 2026 - <strong class="text-white">Falcon Cinema</strong> - All Rights Reserved.
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5.3 JS Bundle & Scripts (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

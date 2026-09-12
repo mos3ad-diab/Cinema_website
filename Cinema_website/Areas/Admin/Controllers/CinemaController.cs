@@ -1,6 +1,8 @@
 ﻿using Cinema_website.Data;
 using Cinema_website.Models;
 using Cinema_website.Repositories;
+using Cinema_website.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
@@ -9,6 +11,7 @@ using System.Runtime.InteropServices;
 namespace Cinema_website.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = $"{CD.ADMIN_ROLE} ,{CD.SUPER_ADMIN_ROLE}")]
     public class CinemaController : Controller
     {
         private readonly IRepository<Cinema> _cinemaRepository;// = new Repository<Cinema>();
@@ -64,12 +67,14 @@ namespace Cinema_website.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE}")]
         public async Task<IActionResult> Edit(int id)
         {
             var cinema = await _cinemaRepository.GetOneAsync(e=>e.Id == id);
             return View(cinema);
         }
         [HttpPost]
+        [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE}")]
         public async Task<IActionResult> Edit(Cinema cinema , IFormFile img)
         {
             if (!ModelState.IsValid)
@@ -98,7 +103,7 @@ namespace Cinema_website.Areas.Admin.Controllers
             await _cinemaRepository.CommitAsync();
             return RedirectToAction("Index");
         }
-
+        [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE}")]
         public async Task<IActionResult> Delete(int id)
         {
             var cinema = await _cinemaRepository.GetOneAsync(e => e.Id == id);

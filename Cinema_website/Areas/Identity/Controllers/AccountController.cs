@@ -1,6 +1,7 @@
 ﻿using Cinema_website.Models;
 using Cinema_website.Repositories;
 using Cinema_website.ViewModels;
+using Cinema_website.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -65,7 +66,7 @@ namespace Cinema_website.Areas.Identity.Controllers
                 "Falcon Cinema Confirmation",
                 $"<h1> please click <a href = {link}> here </a> to confirm your account </h1>"
                 );
-
+            await _userManager.AddToRoleAsync(user, CD.CUSTOMER_ROLE);
             return RedirectToAction(nameof(Login));
         }
 
@@ -156,7 +157,13 @@ namespace Cinema_website.Areas.Identity.Controllers
 
             }
                 
-            return RedirectToAction("Index", "Cinema", new { area = "Admin" });
+            return RedirectToAction("Index", "Home", new { area = "Customer" });
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction(nameof(Login));
         }
         [HttpGet]
         public IActionResult ForgetPassword()
@@ -244,7 +251,10 @@ namespace Cinema_website.Areas.Identity.Controllers
             return RedirectToAction(nameof(Login));
         }
 
-
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
 
     }
 }

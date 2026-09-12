@@ -1,6 +1,8 @@
 ﻿using Cinema_website.Data;
 using Cinema_website.Models;
 using Cinema_website.Repositories;
+using Cinema_website.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +11,8 @@ using System.Linq.Expressions;
 namespace Cinema_website.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = $"{CD.ADMIN_ROLE} ,{CD.SUPER_ADMIN_ROLE}")]
+
     public class MoviesController : Controller
     {
         private readonly IRepository<Movie> _movieRepository; // = new Repository<Movie>();
@@ -117,6 +121,7 @@ namespace Cinema_website.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE}")]
         public async Task<IActionResult> Edit(int id)
         {
             var movie = await _movieRepository.GetOneAsync(
@@ -138,6 +143,7 @@ namespace Cinema_website.Areas.Admin.Controllers
 
         
         [HttpPost]
+        [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE}")]
         public async Task<IActionResult> Edit(Movie movie, IFormFile mainImg, List<IFormFile> subImgs, List<int> selectedActors)
         {
             if (!ModelState.IsValid)
@@ -205,7 +211,8 @@ namespace Cinema_website.Areas.Admin.Controllers
             await _movieActorRepository.CommitAsync();
             return RedirectToAction("Index");
         }
-
+        
+        [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE}")]
         public async Task<IActionResult> Delete(int id)
         {
 

@@ -21,15 +21,30 @@
         <div class="main-wrapper">
 
             <!-- Top Navbar -->
-            <header class="navbar">
-                <div class="navbar-title">Cinema Management System</div>
-                <div class="nav-user-controls">
-                    <button class="icon-btn">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                        <span class="badge">1</span>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+                <div class="container">
+                    <!-- Cinema Brand -->
+                    <a class="navbar-brand fw-bold fs-4 text-primary d-flex align-items-center gap-2" asp-area="Customer" asp-controller="Home" asp-action="Index">
+                        <i class="bi bi-film"></i>
+                        <span>Falcon Cinema</span>
+                    </a>
+
+                    <!-- Mobile Menu Toggle Button -->
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCustomer" aria-controls="navbarCustomer"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
                     </button>
+
+                    <div class="collapse navbar-collapse" id="navbarCustomer">
+
+                    
+                        
+
+                            
+                        
+                    </div>
                 </div>
-            </header>
+            </nav>
 
             <!-- Page Body -->
             <main role="main" class="content">
@@ -37,10 +52,9 @@
             </main>
 
             <!-- Bottom Footer -->
-            <footer class="footer">
-                <div class="footer-content">
-                    <p class="copyright">Thank you for creating with <span>Falcon</span> &copy; 2026</p>
-                    <p class="version">v3.24.0</p>
+            <footer class="footer border-top bg-dark text-white-50 py-3 mt-auto">
+                <div class="container text-center">
+                    &copy; 2026 - <strong class="text-white">Falcon Cinema</strong> - All Rights Reserved.
                 </div>
             </footer>
 

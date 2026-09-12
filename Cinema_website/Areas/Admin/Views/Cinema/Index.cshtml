@@ -32,13 +32,18 @@
             <div class="card-image-wrapper">
                 <img src="~/Images/Cinema_Images/@item.Img" alt="@item.Name" asp-append-version="true" />
                 <div class="card-actions">
-                    <a href="/Admin/Cinema/Edit/@item.Id" class="action-btn edit-btn" title="Edit">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                    </a>
-                    <!-- زرار الحذف مع SweetAlert -->
-                    <button type="button" class="action-btn delete-btn" title="Delete" onclick="confirmDelete(@item.Id, '@item.Name')">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
+                    @if (User.IsInRole("SuperAdmin"))
+                        {
+                            <a href="/Admin/Cinema/Edit/@item.Id" class="action-btn edit-btn" title="Edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <!-- زرار الحذف مع SweetAlert -->
+                            <button type="button" class="action-btn delete-btn" title="Delete" onclick="confirmDelete(@item.Id, '@item.Name')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                            
+                        }
+                        
                 </div>
             </div>
             <div class="card-body">

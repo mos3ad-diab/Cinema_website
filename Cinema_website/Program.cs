@@ -42,6 +42,15 @@ namespace Cinema_website
              .AddEntityFrameworkStores<ApplicationDbContext>()
              .AddDefaultTokenProviders();
 
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+             
+                options.LoginPath = "/Identity/Account/Login"; // Redirect path if unauthenticated
+                options.LogoutPath = "/Identity/Account/Logout"; // Redirect path after logging out
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied"; // Redirect path if unauthorized
+         
+            });
+
             builder.Services.AddScoped<IRepository<Movie>,Repository<Movie>>();
             builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
             builder.Services.AddScoped<IRepository<Actor>, Repository<Actor>>();
@@ -76,7 +85,7 @@ namespace Cinema_website
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{area=Identity}/{controller=Account}/{action=Login}/{id?}")
+                pattern: "{area=Customer}/{controller=Home}/{action=Index}")
                 .WithStaticAssets();
 
             app.Run();
