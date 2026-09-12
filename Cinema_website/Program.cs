@@ -2,16 +2,17 @@ using Cinema_website.Data;
 using Cinema_website.Models;
 using Cinema_website.Repositories;
 using Cinema_website.Utilities;
+using Cinema_website.Utilities.DBSeeder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace Cinema_website
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +49,16 @@ namespace Cinema_website
             builder.Services.AddScoped<IRepository<ApplicationUserOTP>, Repository<ApplicationUserOTP>>();
             builder.Services.AddScoped<IMovieActorRepository, MovieActorRepository>();
             builder.Services.AddTransient<IEmailSender , EmailSender>();
+            builder.Services.AddScoped<IDBInitialization, DBInitialization>();
+
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbInitializer = scope.ServiceProvider.GetRequiredService<IDBInitialization>();
+                await dbInitializer.InitializationAsync(); 
+            }
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
