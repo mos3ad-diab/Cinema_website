@@ -16,8 +16,14 @@ namespace Cinema_website.Areas.Customer.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var movies = await _movieRepository.GetAllAsync();
+            var movies = await _movieRepository.GetAllAsync(includes: [m => m.Category, m => m.Cinema]);
             return View(movies);
+        }
+
+        public async Task<IActionResult> Details(int id) 
+        {
+            var movie = await _movieRepository.GetOneAsync(e => e.Id == id, includes: [m => m.Category, m => m.Cinema]);
+            return View(movie);
         }
     }
 }
