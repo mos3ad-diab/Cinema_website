@@ -50,7 +50,7 @@ namespace Cinema_website.Areas.Identity.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangePassword(ProfileVM profileVM)
+        public async Task<IActionResult> ChangePassword(ChangePasswordVM profileVM)
         {
             if (!ModelState.IsValid)
             {
