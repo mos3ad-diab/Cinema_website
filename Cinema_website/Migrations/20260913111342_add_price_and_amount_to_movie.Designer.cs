@@ -4,6 +4,7 @@ using Cinema_website.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cinema_website.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260913111342_add_price_and_amount_to_movie")]
+    partial class add_price_and_amount_to_movie
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,27 +146,6 @@ namespace Cinema_website.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("ApplicationUserOTPs");
-                });
-
-            modelBuilder.Entity("Cinema_website.Models.Cart", b =>
-                {
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("ApplicationUserId", "MovieId");
-
-                    b.HasIndex("MovieId");
-
-                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("Cinema_website.Models.Category", b =>
@@ -430,25 +412,6 @@ namespace Cinema_website.Migrations
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
-                });
-
-            modelBuilder.Entity("Cinema_website.Models.Cart", b =>
-                {
-                    b.HasOne("Cinema_website.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cinema_website.Models.Movie", "Movie")
-                        .WithMany()
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("Movie");
                 });
 
             modelBuilder.Entity("Cinema_website.Models.Movie", b =>

@@ -18,5 +18,8 @@ namespace Cinema_website.Models
         public Category Category { get; set; }
         public int CinemaId { get; set; }
         public Cinema Cinema { get; set; }
+
+        public int Amount { get; set; }
+        public decimal Price { get; set; }
     }
 }

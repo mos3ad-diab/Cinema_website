@@ -53,15 +53,27 @@
                 </div>
 
                 <!-- Action & Booking Buttons -->
-                <div class="pt-3 border-top d-flex flex-wrap gap-2 align-items-center justify-content-between">
+                <!-- Action & Booking Form -->
+                <div class="pt-3 border-top d-flex flex-wrap gap-3 align-items-center justify-content-between">
+                    <!-- Back Button -->
                     <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg px-4">
                         <i class="bi bi-arrow-left me-1"></i> Back to Movies
                     </a>
 
-                    <!-- Book Ticket Button -->
-                    <a asp-area="Customer" asp-controller="Booking" asp-action="BookTicket" asp-route-movieId="@Model.Id" class="btn btn-primary btn-lg px-5 fw-bold shadow-sm">
-                        <i class="bi bi-ticket-perforated-fill me-2"></i> Book Ticket
-                    </a>
+                    <!-- Booking Form with Quantity Input -->
+                    <form asp-area="Customer" asp-controller="Cart" asp-action="AddToCart" class="d-flex align-items-center gap-2">
+                        <input type="hidden" name="movieId" value="@Model.Id" />
+
+                        <div class="input-group input-group-lg" style="width: 140px;">
+                            <span class="input-group-text bg-light text-muted fw-bold">Qty</span>
+                            <input type="number" name="count" class="form-control text-center fw-bold" value="1" min="1" max="10" required />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg px-4 fw-bold shadow-sm d-flex align-items-center gap-2">
+                            <i class="bi bi-ticket-perforated-fill"></i>
+                            <span>Book Ticket</span>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

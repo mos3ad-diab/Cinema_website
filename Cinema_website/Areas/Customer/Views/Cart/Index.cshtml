@@ -1,0 +1,110 @@
+﻿@model IEnumerable<Cart>
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<div class="container my-5">
+    <h2 class="fw-bold mb-4">
+        <i class="bi bi-cart3 text-primary me-2"></i>Your Ticket Cart
+    </h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (Model != null)
+    {
+        <div class="row g-4">
+            <!-- Items List -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col" class="ps-4">Movie</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col" class="text-center">Quantity</th>
+                                        <th scope="col">Total</th>
+                                        <th scope="col" class="text-end pe-4">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <!-- Movie Info (Title, Image, Cinema) -->
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <img src="~/Images/Movies_Images/@item.Movie.MainImg" class="rounded object-fit-cover" width="60" height="80" alt="@item.Movie.Name" />
+                                                    <div>
+                                                        <h6 class="fw-bold mb-1 text-dark">@item.Movie.Name</h6>
+                                                        
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <!-- Price -->
+                                            <td class="fw-semibold">@item.Price.ToString("C")</td>
+
+                                            
+                                            <!-- Quantity with Plus/Minus Buttons -->
+                                            <td class="text-center" style="width: 160px;">
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <!-- Minus Button -->
+                                                    <a asp-area="Customer" asp-controller="Cart" asp-action="Decrement" asp-route-movieId="@item.MovieId" class="btn btn-sm btn-outline-secondary px-2 py-0">
+                                                        <i class="bi bi-dash-lg"></i>
+                                                    </a>
+
+                                                    <!-- Count Badge -->
+                                                    <span class="badge bg-light text-dark border px-3 py-2 fs-6 fw-bold">
+                                                        @item.Count
+                                                    </span>
+
+                                                    <!-- Plus Button -->
+                                                    <a asp-area="Customer" asp-controller="Cart" asp-action="Increment" asp-route-movieId="@item.MovieId" class="btn btn-sm btn-outline-secondary px-2 py-0">
+                                                        <i class="bi bi-plus-lg"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+
+                                            <!-- Total Price per Item -->
+                                            <td class="fw-bold text-primary">@((item.Price * item.Count).ToString("C"))</td>
+
+                                            <!-- Action (Delete) -->
+                                            <td class="text-end pe-4">
+                                                <form asp-area="Customer" asp-controller="Cart" asp-action="Remove">
+                                                    <input type="hidden" name="movieId" value="@item.MovieId" />
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                        <i class="bi bi-trash-fill"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5 my-5">
+            <i class="bi bi-cart-x display-1 text-muted"></i>
+            <h3 class="fw-bold text-dark mt-3">Your cart is empty</h3>
+            <p class="text-muted">You haven't added any movie tickets to your cart yet.</p>
+            <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg px-4 mt-2">
+                <i class="bi bi-film me-2"></i>Browse Movies
+            </a>
+        </div>
+    }
+</div>

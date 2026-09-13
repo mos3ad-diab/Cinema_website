@@ -16,6 +16,7 @@ namespace Cinema_website.Data
         public DbSet<Movie> Movies { get; set; }
         public DbSet<MovieActor> MovieActors { get; set; }
         public DbSet<SubImg> SubImgs { get; set; }
+        public DbSet<Cart> Carts { get; set; }
         public DbSet<ApplicationUserOTP> ApplicationUserOTPs { get; set; }
         /* protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
          {

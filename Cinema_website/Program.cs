@@ -52,6 +52,7 @@ namespace Cinema_website
             });
 
             builder.Services.AddScoped<IRepository<Movie>,Repository<Movie>>();
+            builder.Services.AddScoped<IRepository<Cart>, Repository<Cart>>();
             builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
             builder.Services.AddScoped<IRepository<Actor>, Repository<Actor>>();
             builder.Services.AddScoped<IRepository<Cinema>, Repository<Cinema>>();
