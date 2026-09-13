@@ -73,6 +73,12 @@
                                         <span>Category</span>
                                     </a>
                                 </li>
+                                <li class="submenu-item @(currentController == "User" || currentController == "User" ? "active" : "")">
+                                    <a asp-area="Admin" asp-controller="User" asp-action="Index" class="submenu-link">
+                                        <i class="fa-solid fa-user-group"></i>
+                                        <span>Users</span>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </li>

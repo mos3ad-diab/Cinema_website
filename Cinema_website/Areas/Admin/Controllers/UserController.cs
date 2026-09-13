@@ -28,7 +28,7 @@ namespace Cinema_website.Areas.Admin.Controllers
 
             foreach (var user in users)
             {
-                // جلب الأدوار (Roles) الخاصة بكل مستخدم
+                
                 var roles = await _userManager.GetRolesAsync(user);
 
                 userListVM.Add(new UserVM
@@ -36,8 +36,9 @@ namespace Cinema_website.Areas.Admin.Controllers
                     Id = user.Id,
                     Name = user.Name,
                     Email = user.Email,
+                    Address = user.Address,
                     PhoneNumber = user.PhoneNumber,
-                    Role = roles.FirstOrDefault() ?? "No Role", // إسناد أول دور للمستخدم
+                    Role = roles.FirstOrDefault() ?? "No Role",
                     LockOutEnd = user.LockoutEnd
                 });
             }

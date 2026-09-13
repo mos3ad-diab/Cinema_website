@@ -63,7 +63,16 @@
                                             <i class="bi bi-person me-2"></i>My Profile
                                         </a>
                                     </li>
-                                    
+
+                                    @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item text-primary fw-semibold" asp-area="Admin" asp-controller="Cinema" asp-action="Index">
+                                                <i class="bi bi-speedometer2 me-2"></i>Admin Dashboard
+                                            </a>
+                                        </li>
+                                    }
+
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form class="form-inline" asp-area="Identity" asp-controller="Account" asp-action="Logout">
@@ -96,6 +105,7 @@
                                 </ul>
                             </li>
                         }
+
                     </ul>
                 </div>
             </div>
